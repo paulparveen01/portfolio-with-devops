@@ -1,0 +1,23 @@
+name: Portfolio Deployment  #workflow name
+
+on:
+  push:
+    branches:
+    - main            #when new push on main branch then below workflow/job will run
+
+jobs:
+  build-and-deploy:                                    #can be any jobname
+    runs-on: ubuntu-latest                             #ubuntu environment to build and deploy
+    steps:                                             #automation/steps need to perform
+    - name: Checkout
+      uses: actions/checkout@v1                        #checkout branch
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1   #these are already available from github actions library to configure aws credentials for you 
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Deploy static site to S3 bucket
+      run: aws s3 sync . s3://tws-junoon --delete
